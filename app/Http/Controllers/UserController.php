@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+
 
 class UserController extends Controller
 {
@@ -38,15 +37,12 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => bcrypt($request->password)
         ]);
-
-        $role = Role::findByName('User'); 
-        $user->assignRole($role); 
 
         return response()->json(['message' => 'User created successfully'], 201);
     }
-    
+
     /**
      * Display the specified resource.
      *
