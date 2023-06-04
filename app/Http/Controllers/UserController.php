@@ -13,9 +13,19 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        $users = User::all(['name', 'email']);
+        $adminUser = User::where('id', $id)
+                        ->where('role', 'admin')
+                        ->first();
+
+        if (!$adminUser) {
+
+            return response()->json(['error' => 'You do not have permission to access this feature.'], 403);
+        }
+
+        $users = User::where('role', 'user')
+                    ->get(['name', 'email']);
 
         return response()->json($users);
     }
@@ -52,6 +62,35 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id, ['name', 'email']);
+
+        return response()->json($user);
+    }
+
+    /**
+     * Display the user ID matching the provided email address.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showByEmail(Request $request, $id)
+    {
+        $adminUser = User::where('id', $id)
+                        ->where('role', 'admin')
+                        ->first();
+
+        if (!$adminUser) {
+            return response()->json(['error' => 'You do not have permission to access this feature.'], 403);
+        }
+
+        $email = $request->json('email');
+
+        $user = User::where('email', $email)
+                    ->first(['id']);
+
+        if (!$user) {
+            return response()->json(['error' => 'No user was found with the provided email.'], 404);
+        }
 
         return response()->json($user);
     }

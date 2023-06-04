@@ -19,8 +19,9 @@ use Illuminate\Support\Facades\Route;
 
 
     // user routes
-    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}/admin', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::get('/users/{id}/admin/user', [UserController::class, 'showByEmail']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
