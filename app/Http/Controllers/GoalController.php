@@ -56,22 +56,17 @@ class GoalController extends Controller
             $goal->current_date = Carbon::now()->format('Y-m-d');
             $goal->start_date = $goal->current_date;
             $goal->end_date = Carbon::parse($goal->start_date)->addDays(21);
-        } elseif ($goal->days_completed > 0 && Carbon::parse($goal->current_date)->addDay(1)->isSameDay(Carbon::now())) {
+        }  elseif ($goal->days_completed > 0 && $goal->current_date == Carbon::now()->subDay()->format('Y-m-d')) {
             $goal->days_completed += 1;
             $goal->current_date = Carbon::now()->format('Y-m-d');
-            $goal->start_date = $goal->current_date;
-            $goal->end_date = Carbon::parse($goal->start_date)->addDays(21);
-        } elseif ($goal->days_completed > 0 && $goal->current_date != Carbon::now()->subDay()->format('Y-m-d')) {
+        } else {
             $goal->days_completed = 1;
             $goal->current_date = Carbon::now()->format('Y-m-d');
             $goal->start_date = $goal->current_date;
             $goal->end_date = Carbon::parse($goal->start_date)->addDays(21);
-        } elseif ($goal->days_completed > 0 && $goal->current_date == Carbon::now()->subDay()->format('Y-m-d')) {
-            $goal->days_completed += 1;
-            $goal->current_date = Carbon::now()->format('Y-m-d');
         }
 
-        if ($goal->days_completed == 20) {
+        if ($goal->days_completed == 21) {
             $this->destroy($id);
         } else {
             $goal->save();
