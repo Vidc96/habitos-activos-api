@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 
@@ -51,6 +53,27 @@ class UserController extends Controller
         ]);
 
         return response()->json(['message' => 'User created successfully'], 201);
+    }
+
+    /**
+     * Store a newly search resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {
+        $data = $request->json()->all();
+        $email = $data['email'];
+        $password = $data['password'];
+    
+        $user = User::where('email', $email)->first();
+    
+        if ($user && Hash::check($password, $user->password)) {
+            return response()->json(['message' => 'Login successful'], 200);
+        } else {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
     }
 
     /**

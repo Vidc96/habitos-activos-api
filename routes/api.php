@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
     // user routes
     Route::get('/users/{id}/admin', [UserController::class, 'index']);
+    Route::get('/users/login', [UserController::class, 'login']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::get('/users/{id}/admin/user', [UserController::class, 'showByEmail']);
     Route::post('/users', [UserController::class, 'store']);
@@ -27,17 +28,15 @@ use Illuminate\Support\Facades\Route;
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     // Goal routes
-    Route::get('/goals', [GoalController::class, 'index']);
-    Route::get('/goals/{id}', [GoalController::class, 'show']);
-    Route::post('/goals', [GoalController::class, 'store']);
-    Route::put('/goals/{id}', [GoalController::class, 'update']);
+    Route::get('/goals/{id}', [GoalController::class, 'index']);
+    Route::post('/goals/user/{id}', [GoalController::class, 'store']);
     Route::delete('/goals/{id}', [GoalController::class, 'destroy']);
+    Route::post('/goals/{id}/check', [GoalController::class, 'checkGoal']);
+
 
     // Book routes
     Route::get('/books', [BookController::class, 'index']);
-    Route::get('/books/{id}', [BookController::class, 'show']);
     Route::post('/books', [BookController::class, 'store']);
-    Route::put('/books/{id}', [BookController::class, 'update']);
     Route::delete('/books/{id}', [BookController::class, 'destroy']);
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -37,29 +37,6 @@ class UserControllerTest extends TestCase
             ]);
     }
 
-    public function showByEmail(Request $request, $id)
-    {
-        $adminUser = User::where('id', $id)
-                        ->where('role', 'admin')
-                        ->first();
-    
-        if (!$adminUser) {
-            return response()->json(['error' => 'You do not have permission to access this feature.'], 403);
-        }
-    
-        $email = $request->input('email');
-    
-        $user = User::where('email', $email)
-                    ->first(['id']);
-    
-        if (!$user) {
-            return response()->json(['error' => 'No user was found with the provided email.'], 404);
-        }
-    
-        return response()->json($user)->setStatusCode(200);
-    }
-    
-
     public function test_can_create_user()
     {
         $userData = [
