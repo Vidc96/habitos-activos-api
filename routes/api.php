@@ -20,9 +20,10 @@ use Illuminate\Support\Facades\Route;
 
     // user routes
     Route::get('/users/{id}/admin', [UserController::class, 'index']);
-    Route::get('/users/login', [UserController::class, 'login']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::get('/users/{id}', [UserController::class, 'showRole']);
+    Route::get('/users/{id}/user', [UserController::class, 'showUser']);
     Route::get('/users/{id}/admin/user', [UserController::class, 'showByEmail']);
+    Route::post('/users/login', [UserController::class, 'login']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\Route;
     // Book routes
     Route::get('/books', [BookController::class, 'index']);
     Route::post('/books', [BookController::class, 'store']);
-    Route::delete('/books/{id}', [BookController::class, 'destroy']);
+    Route::delete('/books/{bookTitle}', [BookController::class, 'destroy']);
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();

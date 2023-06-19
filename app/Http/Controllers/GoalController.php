@@ -32,7 +32,7 @@ class GoalController extends Controller
     public function store(Request $request, $id)
     {
         $data = $request->validate([
-            'goal_name' => 'required|string',
+            'goal_name' => 'required|string|unique:goals,goal_name,NULL,id,user_id,'.$id,
             'goal_description' => 'required|string',
         ]);
 
@@ -40,8 +40,9 @@ class GoalController extends Controller
         $data['user_id'] = $id;
 
         $goal = Goal::create($data);
-        return response()->json(['message' => 'User created successfully'], 201);
+        return response()->json(['message' => 'Goal created successfully'], 201);
     }
+
 
 
     /**
@@ -56,10 +57,10 @@ class GoalController extends Controller
             $goal->current_date = Carbon::now()->format('Y-m-d');
             $goal->start_date = $goal->current_date;
             $goal->end_date = Carbon::parse($goal->start_date)->addDays(21);
-        }  elseif ($goal->days_completed > 0 && $goal->current_date == Carbon::now()->subDay()->format('Y-m-d')) {
+        } elseif ($goal->days_completed > 0 && $goal->current_date == Carbon::now()->startOfDay()->subDay()->format('Y-m-d')) {
             $goal->days_completed += 1;
             $goal->current_date = Carbon::now()->format('Y-m-d');
-        } else {
+        } elseif ($goal->days_completed > 0 && $goal->current_date != Carbon::now()->startOfDay()->format('Y-m-d')) {
             $goal->days_completed = 1;
             $goal->current_date = Carbon::now()->format('Y-m-d');
             $goal->start_date = $goal->current_date;
@@ -74,7 +75,6 @@ class GoalController extends Controller
 
         return response()->json($goal);
     }
-
 
     /**
      * Remove the specified goal from storage.

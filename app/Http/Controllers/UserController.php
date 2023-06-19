@@ -22,13 +22,10 @@ class UserController extends Controller
                         ->first();
 
         if (!$adminUser) {
-
             return response()->json(['error' => 'You do not have permission to access this feature.'], 403);
         }
 
-        $users = User::where('role', 'user')
-                    ->get(['name', 'email']);
-
+        $users = User::all();
         return response()->json($users);
     }
 
@@ -70,7 +67,7 @@ class UserController extends Controller
         $user = User::where('email', $email)->first();
     
         if ($user && Hash::check($password, $user->password)) {
-            return response()->json(['message' => 'Login successful'], 200);
+            return response()->json(['id' => $user->id ], 200);
         } else {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
@@ -82,13 +79,27 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showRole($id)
     {
-        $user = User::findOrFail($id, ['name', 'email']);
-
-        return response()->json($user);
+        $user = User::findOrFail($id, ['role']);
+        $role = $user->role;
+        return response()->json($role);
     }
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showUser($id)
+    {
+        $user = User::findOrFail($id);
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+        return response()->json($data);
+    }
     /**
      * Display the user ID matching the provided email address.
      *
@@ -128,22 +139,27 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required',
-            'password' => 'required|min:6',
-        ]);
-
-        $user->name = $request->name;
-        $user->password = bcrypt($request->password);
-        $user->save();
-
-        $data = [
-            'name' => $user->name,
-            'email' => $user->email,
-        ];
-
-        return response()->json(['message' => 'User updated successfully', 'data' => $data]);
+        $validatedData = [];
+        if ($request->filled('name') && $request->filled('current_password')) {
+            $validatedData['name'] = $request->input('name');
+        }
+        if ($request->filled('email') && $request->filled('current_password')) {
+            $validatedData['email'] = $request->input('email');
+        }
+        if ($request->filled('password') && $request->filled('current_password')) {
+            $currentPassword = $request->input('current_password');
+            if (Hash::check($currentPassword, $user->password)) {
+                $validatedData['password'] = bcrypt($request->input('password'));
+            } else {
+                return response()->json(null, 400);
+            }
+        }
+    
+        if (!empty($validatedData)) {
+            $user->update($validatedData);
+        }
+    
+        return response()->json(null, 204);
     }
 
     /** 

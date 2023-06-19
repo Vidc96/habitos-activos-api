@@ -25,14 +25,15 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $book = new Book;
-        $book->book_title = $request->input('book_title');
-        $book->authors = $request->input('authors');
-        $book->book_description = $request->input('book_description');
-        $book->link = $request->input('link');
-        $book->image_url = $request->input('image_url');
-        $book->save();
-        return response()->json($book, 201);
+        $book = Book::create([
+            'bookTitle' => $request->bookTitle,
+            'authors' => $request->authors,
+            'bookDescription' => $request->bookDescription,
+            'link' => $request->link,
+            'imageUrl' => $request->imageUrl,
+        ]);
+
+        return response()->json(['message' => 'Book created successfully'], 201);
     }
     /**
      * Remove the specified book from storage.
@@ -40,10 +41,11 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($bookTitle)
     {
-        $book = Book::findOrFail($id);
+        $book = Book::where('bookTitle', $bookTitle)->firstOrFail();
         $book->delete();
         return response()->json(null, 204);
     }
+
 }
